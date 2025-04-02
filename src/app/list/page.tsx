@@ -6,6 +6,7 @@ import { loggedInProtectedPage } from '@/lib/page-protection';
 import authOptions from '@/lib/authOptions';
 import { Contact } from '@/lib/validationSchemas';
 import ContactCard from '@/components/ContactCard';
+import { prisma } from '@/lib/prisma';
 
 /** Render a list of stuff for the logged in user. */
 const ListPage = async () => {
@@ -25,17 +26,19 @@ const ListPage = async () => {
   }); */
   // console.log(stuff);
 
-  const contacts: Contact[] = [
-    {
-    
-  }
-
+  const owner = session?.user?.email ? session.user.email : '';
+  const contacts: Contact[] = await prisma.contact.findMany({
+    where: {
+      owner,
+    },
+  });
+  console.log(contacts);
   return (
     <main>
       <Container id="list" fluid className="py-3">
         <Row>
           <Col>
-            <h2 className="text-center">List Contacts</h2>
+            <h2>List Contacts</h2>
             <Row xs={1} md={2} lg={3} className="g-4">
               {contacts.map((contact) => (
                 <Col key={contact.firstName + contact.lastName}>
