@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 // import StuffItem from '@/components/StuffItem';
 import { loggedInProtectedPage } from '@/lib/page-protection';
 import authOptions from '@/lib/authOptions';
-import { Contact } from '@/lib/validationSchemas';
+import { Contact, Note } from '@prisma/client';
 import ContactCard from '@/components/ContactCard';
 import { prisma } from '@/lib/prisma';
 
@@ -32,6 +32,7 @@ const ListPage = async () => {
       owner,
     },
   });
+  const notes: Note[] = await prisma.note.findMany({});
   console.log(contacts);
   return (
     <main>
@@ -42,7 +43,10 @@ const ListPage = async () => {
             <Row xs={1} md={2} lg={3} className="g-4">
               {contacts.map((contact) => (
                 <Col key={contact.firstName + contact.lastName}>
-                  <ContactCard contact={contact} />
+                  <ContactCard
+                    contact={contact}
+                    notes={notes.filter(note => (note.contactId === contact.id))}
+                  />
                 </Col>
               ))}
             </Row>
